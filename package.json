@@ -1,0 +1,15 @@
+{
+  "name": "microbiology-atlas",
+  "private": true,
+  "description": "Teaching-lab purchasing planner. Static site in dist/ plus Cloudflare Pages Functions in functions/; no build step.",
+  "scripts": {
+    "test": "node --test test/unit/*.test.js",
+    "test:browser": "NODE_PATH=${NODE_PATH:-/opt/npm-tools/node_modules} node --test --test-concurrency=1 test/browser/*.test.js",
+    "test:all": "npm test && npm run test:browser",
+    "serve": "node scripts/dev-server.mjs 8765"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  },
+  "type": "module"
+}
