@@ -37,6 +37,9 @@ async function fakeAgentMail(url, init) {
   return new Response(JSON.stringify({ messages: found }), { status: 200 });
 }
 
+// The local server sees every test as the same IP address; clear rate-limit counters between sharing tests.
+function resetRateLimits() { for (const k of [...kv.keys()]) if (k.startsWith('rl:')) kv.delete(k); }
+
 test.before(async () => {
   serverOff = createDevServer({ dist: DIST, env: {} });
   serverOn = createDevServer({ dist: DIST, env: envOn, fetchImpl: fakeAgentMail });
@@ -439,4 +442,59 @@ test('every page passes the contrast scan', async () => {
     assert.deepEqual(await page.evaluate(CONTRAST), [], '/' + slug);
     await context.close();
   }
+});
+
+// ---------- optional confirmation email ----------
+
+test('confirmation email box: disabled until sharing is ticked', async () => {
+  const { page, context, problems } = await open(undefined, baseOn);
+  await page.waitForSelector('#share-block:not([hidden])');
+  assert.equal(await page.isDisabled('#share-email'), true);
+  assert.match(await text(page, '#share-email-label'), /Your email for a confirmation \(optional\)/);
+  await page.check('#share-team');
+  assert.equal(await page.isDisabled('#share-email'), false);
+  await page.uncheck('#share-team');
+  assert.equal(await page.isDisabled('#share-email'), true);
+  assert.deepEqual(problems, []);
+  await context.close();
+});
+
+test('invalid confirmation email: nothing downloaded or sent, field error shown', async () => {
+  mail.sent.length = 0;
+  const { page, context } = await open(undefined, baseOn);
+  await page.waitForSelector('#share-block:not([hidden])');
+  await page.check('#share-team');
+  await page.fill('#share-email', 'a@b.com, other@c.com');
+  let downloads = 0;
+  page.on('download', () => downloads++);
+  const posts = [];
+  page.on('request', r => { if (r.method() === 'POST') posts.push(r.url()); });
+  await page.click('#report-download');
+  await page.waitForTimeout(400);
+  assert.equal(downloads, 0);
+  assert.deepEqual(posts, []);
+  assert.equal(await page.getAttribute('#share-email', 'aria-invalid'), 'true');
+  assert.match(await text(page, '#share-email-error'), /Enter one email address/);
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'share-email');
+  assert.match(await text(page, '#report-status'), /^Not downloaded\. Check the confirmation email address/);
+  await context.close();
+});
+
+test('valid confirmation email: team copy with Reply-To, plus one receipt; status says so', async () => {
+  mail.sent.length = 0;
+  resetRateLimits();
+  const { page, context, problems } = await open(undefined, baseOn);
+  await page.waitForSelector('#share-block:not([hidden])');
+  await page.fill('#institution', 'Example College');
+  await page.check('#share-team');
+  await page.fill('#share-email', 'Coordinator@Example.edu');
+  await download(page, () => page.click('#report-download'));
+  await page.waitForFunction(() => /on its way to/.test(document.querySelector('#share-status').textContent));
+  assert.match(await text(page, '#share-status'), /A confirmation email is on its way to Coordinator@example\.edu\./);
+  assert.equal(mail.sent.length, 2);
+  assert.deepEqual(mail.sent[0].reply_to, ['Coordinator@example.edu']);
+  assert.deepEqual(mail.sent[1].to, ['Coordinator@example.edu']);
+  assert.ok(!mail.sent[1].text.includes('Example College'));
+  assert.deepEqual(problems, []);
+  await context.close();
 });

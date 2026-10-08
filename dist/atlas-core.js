@@ -20,10 +20,32 @@ const TEAM_RECIPIENT = 'microbiology-atlas-team@agentmail.to';
 
 // Consent copy is versioned: if the wording or recipient changes, bump the
 // version so shared copies record exactly what the visitor agreed to.
-const CONSENT_VERSION = '2026-10-08';
+const CONSENT_VERSION = '2026-10-08.2'; // .2: optional confirmation email added
 const CONSENT_LABEL = 'Share a copy with the Microbiology Atlas team';
 const CONSENT_TEXT = 'If selected, clicking Download sends this report, including your institution, course, budget and notes, to '
   + TEAM_RECIPIENT + '. This is the website’s own team, not your colleagues. You can download without sharing.';
+
+// Optional address for a receipt. Separate from consent above: sharing never requires it.
+const CONTACT_LABEL = 'Your email for a confirmation (optional)';
+const CONTACT_HELP = 'We’ll send one email confirming the team received this report, and the team may reply about it. '
+  + 'We won’t add you to any list. Leave blank to share without it.';
+const CONTACT_MAX = 254;
+
+/**
+ * Validate one plain email address. Deliberately strict: a single address,
+ * no display names, spaces, commas, angle brackets or line breaks.
+ * Returns { ok, value } with a lower-cased domain, or { ok:false, error }.
+ */
+function validateContactEmail(raw) {
+  const text = String(raw == null ? '' : raw).trim();
+  if (!text) return { ok: true, value: '' };
+  if (text.length > CONTACT_MAX) return { ok: false, error: 'Use an email address of ' + CONTACT_MAX + ' characters or fewer.' };
+  const m = /^([A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]{1,64})@([A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+)$/.exec(text);
+  if (!m || m[1].startsWith('.') || m[1].endsWith('.') || m[1].includes('..') || !/\.[A-Za-z]{2,}$/.test(m[2])) {
+    return { ok: false, error: 'Enter one email address, like name@college.edu, or leave this blank.' };
+  }
+  return { ok: true, value: m[1] + '@' + m[2].toLowerCase() };
+}
 
 // Technical guard limits that keep arithmetic exact. They are not
 // recommended laboratory quantities or budgets.
@@ -468,7 +490,8 @@ function renderBriefMarkdown(budget, review) {
 }
 
 export {
-  SCHEMA_VERSION, FORMULA_VERSION, CURRENCY, TEAM_RECIPIENT, CONSENT_VERSION, CONSENT_LABEL, CONSENT_TEXT, LIMITS,
+  SCHEMA_VERSION, FORMULA_VERSION, CURRENCY, TEAM_RECIPIENT, CONSENT_VERSION, CONSENT_LABEL, CONSENT_TEXT,
+  CONTACT_LABEL, CONTACT_HELP, CONTACT_MAX, validateContactEmail, LIMITS,
   ITEM_FIELDS, BUDGET_FIELDS, CONTEXT_FIELDS, CHECKLIST, ITEM_DEFAULTS, BUDGET_DEFAULTS, SOURCES,
   parseNumber, toCents, validateContext, calculateItem, calculateBudget, isDefaultInput,
   formatUSD, formatCount, escapeHtml, escapeMarkdown, csvCell, itemExplanation,

@@ -209,10 +209,35 @@ import * as C from './atlas-core.js';
       sharing = cfg.sharing;
       setText('share-label', C.CONSENT_LABEL);
       setText('share-text', C.CONSENT_TEXT);
+      setText('share-email-label', C.CONTACT_LABEL);
+      setText('share-email-help', C.CONTACT_HELP);
       $('share-team').checked = false;
+      $('share-email').disabled = true;
       $('share-block').hidden = false;
     })
     .catch(() => { /* static hosting or offline: sharing stays unavailable; downloads unaffected */ });
+
+  // The email box only works while sharing is ticked; it is never sent otherwise.
+  $('share-team').addEventListener('change', () => {
+    $('share-email').disabled = !$('share-team').checked;
+    if (!$('share-team').checked) clearEmailError();
+  });
+
+  function emailError(msg) {
+    const input = $('share-email');
+    const node = errorNode(input);
+    node.textContent = msg;
+    node.hidden = false;
+    input.setAttribute('aria-invalid', 'true');
+  }
+  function clearEmailError() {
+    const input = $('share-email');
+    const node = errorNode(input);
+    node.textContent = '';
+    node.hidden = true;
+    input.removeAttribute('aria-invalid');
+  }
+  $('share-email').addEventListener('input', clearEmailError);
 
   function shareStatus(text, tone) {
     const el = $('share-status');
@@ -224,6 +249,12 @@ import * as C from './atlas-core.js';
   const MESSAGES = {
     sending: 'Download requested. Sending your selected copy to the team…',
     accepted: id => 'The email service accepted your report (' + id + ') for delivery to the team.',
+    confirmation: {
+      sent: to => ' A confirmation email is on its way to ' + to + '.',
+      failed: to => ' We couldn’t send the confirmation email to ' + to + ', but the team has your report.',
+      limited: to => ' We’ve already sent several confirmations to ' + to + ' today, so we didn’t send another.',
+      unknown: () => ' We couldn’t confirm whether a confirmation email was sent.',
+    },
     failed: 'Your report download is available. Email sharing failed; try again.',
     uncertain: 'Your download is available. We could not confirm email status; checking before another send.',
     stillUnknown: id => 'Your download is available. We still could not confirm whether report ' + id + ' reached the team, so we have not sent it again. Please don’t resend; contact us with the report ID if you need to check.',
@@ -242,10 +273,10 @@ import * as C from './atlas-core.js';
       });
       let data = {};
       try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
-      if (res.ok || res.status === 202) return data.state || 'uncertain';
+      if (res.ok || res.status === 202) return { state: data.state || 'uncertain', confirmation: data.confirmation };
       return { error: data.error || 'email_unavailable', message: data.message };
     } catch (e) {
-      return 'uncertain'; // timeout or connection lost after sending: outcome unknown
+      return { state: 'uncertain' }; // timeout or connection lost after sending: outcome unknown
     } finally {
       clearTimeout(timer);
     }
@@ -258,11 +289,11 @@ import * as C from './atlas-core.js';
         const res = await fetch('/api/reports/status?reportId=' + encodeURIComponent(reportId), { cache: 'no-store' });
         if (res.ok) {
           const { state } = await res.json();
-          if (state === 'accepted' || state === 'failed') return state;
+          if (state === 'accepted' || state === 'failed') return { state };
         }
       } catch (e) { /* keep waiting */ }
     }
-    return 'unknown';
+    return { state: 'unknown' };
   }
 
   async function share(payload) {
@@ -272,17 +303,22 @@ import * as C from './atlas-core.js';
     pending = { payload };
     shareStatus(MESSAGES.sending, 'progress');
     let outcome = await postShare(payload);
-    if (outcome === 'pending' || outcome === 'uncertain') {
+    if (outcome.state === 'pending' || outcome.state === 'uncertain') {
       shareStatus(MESSAGES.uncertain, 'progress');
       outcome = await checkStatus(payload.reportId);
     }
-    if (outcome === 'accepted') {
-      shareStatus(MESSAGES.accepted(payload.reportId), 'ok');
+    if (outcome.state === 'accepted') {
+      let text = MESSAGES.accepted(payload.reportId);
+      if (payload.contactEmail) {
+        const c = MESSAGES.confirmation[outcome.confirmation] || MESSAGES.confirmation.unknown;
+        text += c(payload.contactEmail);
+      }
+      shareStatus(text, 'ok');
       pending = null;
-    } else if (outcome === 'failed') {
+    } else if (outcome.state === 'failed') {
       shareStatus(MESSAGES.failed, 'error');
       $('share-retry').hidden = false;
-    } else if (outcome === 'unknown') {
+    } else if (outcome.state === 'unknown') {
       shareStatus(MESSAGES.stillUnknown(payload.reportId), 'error');
       pending = null;
     } else {
@@ -324,13 +360,26 @@ import * as C from './atlas-core.js';
     }
     showErrors(CONTEXT_IDS, null, false);
     const snapshot = built.snapshot;
+
+    const wantsShare = sharing.enabled && !$('share-block').hidden && $('share-team').checked;
+    let contactEmail = '';
+    if (wantsShare) {
+      const checked = C.validateContactEmail($('share-email').value);
+      if (!checked.ok) {
+        emailError(checked.error);
+        status.textContent = 'Not downloaded. Check the confirmation email address, or leave it blank.';
+        $('share-email').focus();
+        return;
+      }
+      clearEmailError();
+      contactEmail = checked.value;
+    }
     let timeZone;
     try { timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (err) { timeZone = undefined; }
 
     // 1. Always download first, whatever the sharing choice.
     save(C.renderReportHtml(snapshot, { timeZone }), C.reportFilename(snapshot), 'text/html');
 
-    const wantsShare = sharing.enabled && !$('share-block').hidden && $('share-team').checked;
     $('share-retry').hidden = true;
     if (!wantsShare) {
       status.textContent = 'Download requested (report ' + snapshot.reportId + '). No copy was sent to the team. Open the HTML file in a browser to read, print or save as PDF.';
@@ -349,6 +398,7 @@ import * as C from './atlas-core.js';
       context: Object.fromEntries(Object.keys(CONTEXT_IDS).map(k => [k, contextRaw[k]])),
       review: snapshot.review,
       consent: { selected: true, textVersion: C.CONSENT_VERSION },
+      ...(contactEmail ? { contactEmail } : {}),
     };
     share(payload);
   });

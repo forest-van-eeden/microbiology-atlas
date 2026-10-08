@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as C from '../../dist/atlas-core.js';
-import { handleShare, handleStatus, handleConfig, reportLabel, MAX_BODY_BYTES } from '../../functions/_lib/share.js';
+import { handleShare, handleStatus, handleConfig, reportLabel, confirmLabel, MAX_BODY_BYTES } from '../../functions/_lib/share.js';
 
 const NOW = Date.UTC(2026, 9, 8, 15, 0);
 const ORIGIN = 'https://atlas.example';
@@ -88,7 +88,7 @@ test('Q11 accepted: fixed recipient, report rebuilt server-side and identical to
   const e = env(), mail = fakeMail(), body = payload();
   const r = await share(e, mail, body);
   assert.equal(r.status, 200);
-  assert.deepEqual(await r.json(), { state: 'accepted', reportId: body.reportId });
+  assert.deepEqual(await r.json(), { state: 'accepted', reportId: body.reportId, confirmation: 'none' });
   assert.equal(r.headers.get('cache-control'), 'no-store');
   assert.equal(mail.sent.length, 1);
   const msg = mail.sent[0];
@@ -120,7 +120,7 @@ test('Q12 duplicate click: second request with the same report id does not resen
   await share(e, mail, body);
   const again = await share(e, mail, body);
   assert.equal(again.status, 200);
-  assert.deepEqual(await again.json(), { state: 'accepted', reportId: body.reportId, duplicate: true });
+  assert.deepEqual(await again.json(), { state: 'accepted', reportId: body.reportId, duplicate: true, confirmation: 'none' });
   assert.equal(mail.sent.length, 1);
 });
 
@@ -226,4 +226,77 @@ test('status endpoint validates ids and never leaks contents', async () => {
   await share(e, mail, body);
   const s = await (await statusOf(e, mail, body.reportId)).text();
   assert.equal(s, JSON.stringify({ state: 'accepted', reportId: body.reportId }));
+});
+
+// ---------- optional confirmation email ----------
+
+test('confirmation: one fixed-text receipt to the visitor; team email gets Reply-To', async () => {
+  const e = env(), mail = fakeMail(), body = payload({ contactEmail: ' Coordinator@Example.EDU ' });
+  const r = await share(e, mail, body);
+  assert.deepEqual(await r.json(), { state: 'accepted', reportId: body.reportId, confirmation: 'sent' });
+  assert.equal(mail.sent.length, 2);
+  const [team, receipt] = mail.sent;
+  assert.deepEqual(team.reply_to, ['Coordinator@example.edu']);
+  assert.match(team.text, /Confirmation requested: the visitor gave Coordinator@example\.edu/);
+  assert.deepEqual(receipt.to, ['Coordinator@example.edu']);
+  assert.equal(receipt.subject, 'Microbiology Atlas received your report ' + body.reportId);
+  assert.ok(receipt.labels.includes(confirmLabel(body.reportId)));
+  assert.ok(!receipt.labels.includes(reportLabel(body.reportId)), 'receipt never mistaken for the team copy during reconciliation');
+  assert.equal(receipt.attachments, undefined, 'no attachment');
+  assert.equal(receipt.html, undefined, 'plain text only');
+  for (const userText of ['Example College', 'BIO 205', 'Line 1', 'A. Coordinator']) assert.ok(!receipt.text.includes(userText), 'no visitor-written content: ' + userText);
+  assert.ok(receipt.text.includes(body.reportId));
+  const stored = [...e.SHARE_LOG.m.entries()];
+  assert.ok(!stored.some(([k, v]) => /coordinator/i.test(k + v)), 'address never stored in KV');
+});
+
+test('confirmation: never resent on a duplicate request', async () => {
+  const e = env(), mail = fakeMail(), body = payload({ contactEmail: 'a@b.edu' });
+  await share(e, mail, body);
+  const again = await (await share(e, mail, body)).json();
+  assert.equal(again.duplicate, true);
+  assert.equal(again.confirmation, 'sent');
+  assert.equal(mail.sent.length, 2);
+});
+
+test('confirmation failure does not affect the report outcome or cause a resend', async () => {
+  const e = env(), mail = fakeMail(['ok', '403']), body = payload({ contactEmail: 'a@b.edu' });
+  const r = await (await share(e, mail, body)).json();
+  assert.deepEqual(r, { state: 'accepted', reportId: body.reportId, confirmation: 'failed' });
+  const again = await (await share(e, mail, body)).json();
+  assert.equal(again.duplicate, true);
+  assert.equal(mail.sent.length, 1, 'only the team copy; no retry storm');
+});
+
+test('confirmation limit: at most 3 receipts per address per day', async () => {
+  const e = env(), mail = fakeMail();
+  const results = [];
+  for (let i = 0; i < 4; i++) {
+    const req = handleShare(new Request(ORIGIN + '/api/reports/share', {
+      method: 'POST', body: JSON.stringify(payload({ contactEmail: 'victim@example.com' })),
+      headers: { 'content-type': 'application/json', origin: ORIGIN, 'cf-connecting-ip': '198.51.100.' + i },
+    }), e, { fetch: mail.impl, now: () => NOW });
+    results.push((await (await req).json()).confirmation);
+  }
+  assert.deepEqual(results, ['sent', 'sent', 'sent', 'limited']);
+  assert.equal(mail.sent.filter(m => m.to[0] === 'victim@example.com').length, 3);
+  assert.equal(mail.sent.filter(m => m.to[0] === 'microbiology-atlas-team@agentmail.to').length, 4, 'reports still delivered');
+});
+
+test('invalid or injected contact addresses are rejected before anything is sent', async () => {
+  for (const bad of ['not-an-email', 'a@b.com, c@d.com', 'a@b.com\nBcc: x@y.com', '<a@b.com>', 'x'.repeat(250) + '@b.com', 42]) {
+    const mail = fakeMail();
+    const r = await share(env(), mail, payload({ contactEmail: bad }));
+    assert.equal(r.status, 400, String(bad));
+    assert.equal((await r.json()).error, 'invalid_contact');
+    assert.equal(mail.calls.length, 0);
+  }
+});
+
+test('blank contact address is the same as none', async () => {
+  const mail = fakeMail();
+  const r = await (await share(env(), mail, payload({ contactEmail: '' }))).json();
+  assert.equal(r.confirmation, 'none');
+  assert.equal(mail.sent.length, 1);
+  assert.equal(mail.sent[0].reply_to, undefined);
 });

@@ -13,6 +13,11 @@
  *   SHARE_LOG              KV namespace binding: duplicate protection, delivery state, rate limits
  *
  * Report contents are never written to KV or logs: only ids, timestamps and states.
+ *
+ * Optional confirmation: if the visitor gives an email address, one fixed-text
+ * receipt (report ID only, no visitor-written content) is sent to it after the
+ * team copy is accepted. Limits: one per report, CONFIRM_PER_ADDRESS_PER_DAY per
+ * address (keyed by a one-way hash), and it shares the global daily cap.
  */
 import * as C from '../../dist/atlas-core.js';
 
@@ -22,12 +27,14 @@ const PENDING_STALE_MS = 2 * 60 * 1000;
 const RECORD_TTL_S = 60 * 60 * 24 * 30;      // delivery-state records: 30 days
 const PER_IP_PER_HOUR = 5;
 const GLOBAL_PER_DAY = 200;
+const CONFIRM_PER_ADDRESS_PER_DAY = 3;
 
 const ITEM_KEYS = Object.keys(C.ITEM_FIELDS);
 const BUDGET_KEYS = Object.keys(C.BUDGET_FIELDS);
 const CONTEXT_KEYS = Object.keys(C.CONTEXT_FIELDS);
 const REVIEW_KEYS = C.CHECKLIST.map(c => c.key);
-const TOP_KEYS = ['schemaVersion', 'reportId', 'generatedAt', 'timeZone', 'item', 'budget', 'context', 'review', 'consent'];
+const TOP_KEYS = ['schemaVersion', 'reportId', 'generatedAt', 'timeZone', 'item', 'budget', 'context', 'review', 'consent', 'contactEmail'];
+const OPTIONAL_KEYS = ['timeZone', 'contactEmail'];
 const ID_RE = /^MA-[0-9A-HJKMNP-TV-Z]{8}-[0-9A-HJKMNP-TV-Z]{8}$/;
 
 export function sharingConfigured(env) {
@@ -66,7 +73,7 @@ const allStrings = (obj, keys) => keys.every(k => typeof obj[k] === 'string');
 
 /** Strictly validate the request body shape. Returns an error message or null. */
 export function checkShape(body) {
-  if (!exactKeys(body, TOP_KEYS, TOP_KEYS.filter(k => k !== 'timeZone'))) return 'Unexpected or missing fields.';
+  if (!exactKeys(body, TOP_KEYS, TOP_KEYS.filter(k => !OPTIONAL_KEYS.includes(k)))) return 'Unexpected or missing fields.';
   if (body.schemaVersion !== C.SCHEMA_VERSION) return 'unsupported_version';
   if (typeof body.reportId !== 'string' || !ID_RE.test(body.reportId)) return 'Invalid report identifier.';
   if (typeof body.generatedAt !== 'string' || Number.isNaN(Date.parse(body.generatedAt))) return 'Invalid timestamp.';
@@ -79,6 +86,9 @@ export function checkShape(body) {
   if (!exactKeys(body.context, CONTEXT_KEYS) || !allStrings(body.context, CONTEXT_KEYS)) return 'Invalid report details.';
   if (!exactKeys(body.review, REVIEW_KEYS) || !REVIEW_KEYS.every(k => typeof body.review[k] === 'boolean')) return 'Invalid checklist.';
   if (!exactKeys(body.consent, ['selected', 'textVersion'])) return 'missing_consent';
+  if (body.contactEmail !== undefined) {
+    if (typeof body.contactEmail !== 'string' || !C.validateContactEmail(body.contactEmail).ok) return 'invalid_contact';
+  }
   return null;
 }
 
@@ -94,7 +104,7 @@ export function reportLabel(reportId) {
 }
 
 /** Plain-text email body: a short summary. Raw user text stays in the attachment only. */
-export function emailText(snapshot, receivedAt) {
+export function emailText(snapshot, receivedAt, contactEmail) {
   const s = snapshot, br = s.budget.results, ir = s.item.results;
   const reviewed = C.CHECKLIST.filter(c => s.review[c.key]).length;
   return [
@@ -111,6 +121,10 @@ export function emailText(snapshot, receivedAt) {
     'Checklist: ' + reviewed + ' of ' + C.CHECKLIST.length + ' reviewed',
     'Uses illustrative example values: item ' + (s.illustrativeDefaults.item ? 'yes' : 'no') + ', budget ' + (s.illustrativeDefaults.budget ? 'yes' : 'no'),
     '',
+    contactEmail
+      ? 'Confirmation requested: the visitor gave ' + contactEmail + ' (set as Reply-To). Replying to this email reaches them.'
+      : 'No contact address given; the visitor cannot be replied to.',
+    '',
     'The complete report, including the visitor’s institution, course and notes, is attached as HTML.',
     'Retention: keep until the pilot ends, and for no more than 12 months (see /privacy).',
   ].join('\n');
@@ -121,6 +135,61 @@ async function hashIp(ip, hour) {
   const data = new TextEncoder().encode('atlas-rl:' + hour + ':' + (ip || 'unknown'));
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', data));
   return Array.from(digest.subarray(0, 12), b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Fixed receipt text. Only the report ID varies; nothing the visitor typed is included. */
+export function confirmationText(reportId) {
+  return [
+    'Thank you for sharing your planning report with the Microbiology Atlas team.',
+    '',
+    'We have received report ' + reportId + '.',
+    '',
+    'We use shared reports to understand whether the planner is useful and what to improve during the pilot. '
+      + 'We keep them until the pilot ends, and for no more than 12 months. We will not add you to any mailing list.',
+    '',
+    'To ask a question, or to have this report deleted, reply to this email and include the report ID.',
+    '',
+    'If you did not share a report on Microbiology Atlas, you can ignore this message. No further emails will follow.',
+    '',
+    'Microbiology Atlas · https://microbiology-atlas.pages.dev/privacy',
+  ].join('\n');
+}
+
+export function confirmLabel(reportId) {
+  return 'confirm-' + reportId.toLowerCase();
+}
+
+async function sha(text) {
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+  return Array.from(digest.subarray(0, 12), b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function confirmationAllowed(kv, email, now) {
+  const day = Math.floor(now / 86400000);
+  const key = 'rl:addr:' + (await sha('atlas-addr:' + email.toLowerCase())) + ':' + day;
+  const count = Number((await kv.get(key)) || 0);
+  if (count >= CONFIRM_PER_ADDRESS_PER_DAY) return false;
+  await kv.put(key, String(count + 1), { expirationTtl: 90000 });
+  return true;
+}
+
+/** Send the receipt. Never throws; returns 'sent' | 'failed' | 'limited'. */
+async function sendConfirmation(env, fetchImpl, kv, email, reportId, now) {
+  if (!(await confirmationAllowed(kv, email, now))) return 'limited';
+  try {
+    const res = await agentmail(env, fetchImpl, '/messages/send', {
+      method: 'POST',
+      body: JSON.stringify({
+        to: [email],
+        subject: 'Microbiology Atlas received your report ' + reportId,
+        text: confirmationText(reportId),
+        labels: ['atlas-confirmation', confirmLabel(reportId)],
+      }),
+    });
+    return res.ok ? 'sent' : 'failed';
+  } catch (e) {
+    return 'failed';
+  }
 }
 
 async function rateLimited(kv, ip, now) {
@@ -205,6 +274,7 @@ export async function handleShare(request, env, deps = {}) {
   const shapeError = checkShape(body);
   if (shapeError === 'unsupported_version') return fail(400, 'unsupported_version', 'This page is out of date. Reload and try again.');
   if (shapeError === 'missing_consent') return fail(400, 'missing_consent', 'Sharing needs your explicit consent.');
+  if (shapeError === 'invalid_contact') return fail(400, 'invalid_contact', 'Check the confirmation email address, or leave it blank.');
   if (shapeError) return fail(400, 'invalid_input', shapeError);
   if (body.consent.selected !== true) return fail(400, 'missing_consent', 'Sharing needs your explicit consent.');
   if (body.consent.textVersion !== C.CONSENT_VERSION) return fail(409, 'consent_outdated', 'The sharing terms have changed. Reload the page to review them.');
@@ -218,16 +288,17 @@ export async function handleShare(request, env, deps = {}) {
   });
   if (!built.ok) return fail(400, 'invalid_input', 'Some report values are invalid.', {});
   const snapshot = built.snapshot;
+  const contactEmail = body.contactEmail ? C.validateContactEmail(body.contactEmail).value : '';
 
   const kv = env.SHARE_LOG;
   const existing = await readRecord(kv, snapshot.reportId);
   if (existing) {
     let rec = existing;
     if (rec.state === 'sending' && now - Date.parse(rec.updatedAt) > PENDING_STALE_MS) rec = await reconcile(env, fetchImpl, snapshot.reportId, rec, nowIso);
-    if (rec.state === 'accepted') return json(200, { state: 'accepted', reportId: snapshot.reportId, duplicate: true });
+    if (rec.state === 'accepted') return json(200, { state: 'accepted', reportId: snapshot.reportId, duplicate: true, confirmation: rec.confirmation || 'none' });
     if (rec.state === 'sending' || rec.state === 'uncertain') {
       if (rec.state === 'uncertain') rec = await reconcile(env, fetchImpl, snapshot.reportId, rec, nowIso);
-      if (rec.state === 'accepted') return json(200, { state: 'accepted', reportId: snapshot.reportId, duplicate: true });
+      if (rec.state === 'accepted') return json(200, { state: 'accepted', reportId: snapshot.reportId, duplicate: true, confirmation: rec.confirmation || 'none' });
       if (rec.state !== 'failed') return json(202, { state: 'pending', reportId: snapshot.reportId });
     }
     // state failed → allow a retry below
@@ -242,7 +313,8 @@ export async function handleShare(request, env, deps = {}) {
   const message = {
     to: [C.TEAM_RECIPIENT],
     subject: 'Shared planning report ' + snapshot.reportId,
-    text: emailText(snapshot, nowIso),
+    text: emailText(snapshot, nowIso, contactEmail),
+    ...(contactEmail ? { reply_to: [contactEmail] } : {}),
     labels: ['atlas-shared-report', reportLabel(snapshot.reportId)],
     attachments: [{ filename: C.reportFilename(snapshot), content_type: 'text/html', content: base64Utf8(html) }],
   };
@@ -258,8 +330,14 @@ export async function handleShare(request, env, deps = {}) {
   if (res.ok) {
     let messageId = null;
     try { messageId = (await res.json()).message_id || null; } catch (e) { /* accepted without a parsable body */ }
-    await writeRecord(kv, snapshot.reportId, { state: 'accepted', messageId, updatedAt: nowIso });
-    return json(200, { state: 'accepted', reportId: snapshot.reportId });
+    // Record acceptance first, so a confirmation problem can never cause the report to be resent.
+    await writeRecord(kv, snapshot.reportId, { state: 'accepted', messageId, updatedAt: nowIso, confirmation: contactEmail ? 'pending' : 'none' });
+    let confirmation = 'none';
+    if (contactEmail) {
+      confirmation = await sendConfirmation(env, fetchImpl, kv, contactEmail, snapshot.reportId, now);
+      await writeRecord(kv, snapshot.reportId, { state: 'accepted', messageId, updatedAt: nowIso, confirmation });
+    }
+    return json(200, { state: 'accepted', reportId: snapshot.reportId, confirmation });
   }
   if (res.status >= 500) {
     await writeRecord(kv, snapshot.reportId, { state: 'uncertain', updatedAt: nowIso, providerStatus: res.status });

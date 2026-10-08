@@ -17,7 +17,8 @@ Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site
 | `POST /api/reports/share` | Built: same-origin, ≤64 KB, strict schema, server recompute, fixed recipient, rate limits (hashed IP), idempotent per report ID |
 | Uncertain-outcome handling | Built: status endpoint reconciles with AgentMail by message label; no automatic resend |
 | Independent download/email status, retry | Built; retry reuses the same report |
-| Tests | 65 unit + 25 browser, all passing locally (fake AgentMail) |
+| Optional confirmation email | Built: optional address (enabled only when sharing is ticked) → one fixed-text receipt with the report ID; team copy gets Reply-To; ≤3 receipts per address per day (hashed); never resent on duplicates; failure doesn't affect the report. Consent version `2026-10-08.2`; privacy page updated |
+| Tests | 74 unit + 28 browser, all passing locally (fake AgentMail) |
 | Deployment to Cloudflare | **Live** at https://microbiology-atlas.pages.dev (8 Oct 2026); auto-deploys from `main` of github.com/forest-van-eeden/microbiology-atlas; KV `SHARE_LOG` bound; `AGENTMAIL_API_KEY` secret (inbox-scoped key); `SHARING_ENABLED=true` |
 | Live end-to-end email to team inbox | **Verified 8 Oct 2026 13:27 EDT**: test report MA-QDJ529B4-E3DKZDZ2 sent from the live site; received in microbiology-atlas-team@agentmail.to with both labels and the 7.7 KB attachment (filename and size match the download); `/api/reports/status` returns `accepted`. Team inbox sends to itself successfully. |
 | Screen-reader audit; Safari/Firefox/device matrix | Not done |

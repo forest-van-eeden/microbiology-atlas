@@ -37,3 +37,7 @@ footer{align-items:center;flex-wrap:wrap}footer nav{display:flex;gap:18px;flex-w
 .callout{background:#e7ebdc;padding:18px 22px;margin:22px 0}
 @media(max-width:400px){.page{padding:45px 16px 60px}.share{padding:14px}.share .fine{margin-left:0}}
 .page p.eyebrow{font-size:11px}
+
+.share-contact{margin:16px 0 0 34px;display:grid;gap:6px;max-width:460px}.share-contact label{font-size:12px}
+#share-email{margin-top:0}#share-email:disabled{opacity:.55;cursor:not-allowed}.share-help{font-size:12px;color:#3f544c}
+@media(max-width:400px){.share-contact{margin-left:0}}

@@ -264,3 +264,18 @@ test.describe('other exports', () => {
     assert.ok(md.includes('- Semester total (USD): 12463.00'));
   });
 });
+
+test.describe('contact email validation', () => {
+  test('accepts plain addresses and normalises the domain', () => {
+    assert.deepEqual(C.validateContactEmail(' Name.Last+lab@College.EDU '), { ok: true, value: 'Name.Last+lab@college.edu' });
+    assert.deepEqual(C.validateContactEmail(''), { ok: true, value: '' });
+  });
+  test('rejects anything that could add recipients or headers', () => {
+    for (const bad of ['bad', 'a@b', 'a@@b.com', 'a b@c.com', 'a@b.com,c@d.com', 'a@b.com;c@d.com', 'a@b.com\nBcc: x@y.com', '<a@b.com>', 'Name <a@b.com>', '.a@b.com', 'a..b@c.com', 'x'.repeat(250) + '@b.com']) {
+      assert.equal(C.validateContactEmail(bad).ok, false, bad);
+    }
+  });
+  test('consent version changed with the new optional field', () => {
+    assert.equal(C.CONSENT_VERSION, '2026-10-08.2');
+  });
+});
