@@ -18,8 +18,8 @@ Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site
 | Uncertain-outcome handling | Built: status endpoint reconciles with AgentMail by message label; no automatic resend |
 | Independent download/email status, retry | Built; retry reuses the same report |
 | Tests | 65 unit + 25 browser, all passing locally (fake AgentMail) |
-| Deployment to Cloudflare | **Not done** — needs GitHub repo + Cloudflare account setup (README → Deploying) |
-| Live end-to-end email to team inbox | **Not done** — needs deployment and AgentMail API key |
+| Deployment to Cloudflare | **Live** at https://microbiology-atlas.pages.dev (8 Oct 2026); auto-deploys from `main` of github.com/forest-van-eeden/microbiology-atlas; KV `SHARE_LOG` bound; `SHARING_ENABLED=false` |
+| Live end-to-end email to team inbox | **Not done** — waiting for owner to add `AGENTMAIL_API_KEY` secret in Cloudflare |
 | Screen-reader audit; Safari/Firefox/device matrix | Not done |
 | Affiliate applications | Not started; site now has the pages programs usually review |
 
