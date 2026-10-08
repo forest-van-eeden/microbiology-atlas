@@ -1,6 +1,6 @@
 # Microbiology Atlas — implementation status
 
-Updated 8 October 2026 after increment 2 (public site + report sharing).
+Updated 8 October 2026: increment 2 live (public site + report sharing, verified end to end).
 
 Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site; owner named as **Forest van Eeden**; shared reports kept **until the pilot ends, no longer than 12 months**.
 
@@ -18,8 +18,8 @@ Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site
 | Uncertain-outcome handling | Built: status endpoint reconciles with AgentMail by message label; no automatic resend |
 | Independent download/email status, retry | Built; retry reuses the same report |
 | Tests | 65 unit + 25 browser, all passing locally (fake AgentMail) |
-| Deployment to Cloudflare | **Live** at https://microbiology-atlas.pages.dev (8 Oct 2026); auto-deploys from `main` of github.com/forest-van-eeden/microbiology-atlas; KV `SHARE_LOG` bound; `SHARING_ENABLED=false` |
-| Live end-to-end email to team inbox | **Not done** — waiting for owner to add `AGENTMAIL_API_KEY` secret in Cloudflare |
+| Deployment to Cloudflare | **Live** at https://microbiology-atlas.pages.dev (8 Oct 2026); auto-deploys from `main` of github.com/forest-van-eeden/microbiology-atlas; KV `SHARE_LOG` bound; `AGENTMAIL_API_KEY` secret (inbox-scoped key); `SHARING_ENABLED=true` |
+| Live end-to-end email to team inbox | **Verified 8 Oct 2026 13:27 EDT**: test report MA-QDJ529B4-E3DKZDZ2 sent from the live site; received in microbiology-atlas-team@agentmail.to with both labels and the 7.7 KB attachment (filename and size match the download); `/api/reports/status` returns `accepted`. Team inbox sends to itself successfully. |
 | Screen-reader audit; Safari/Firefox/device matrix | Not done |
 | Affiliate applications | Not started; site now has the pages programs usually review |
 
