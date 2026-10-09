@@ -147,7 +147,7 @@ export function confirmationText(reportId) {
     'We use shared reports to understand whether the planner is useful and what to improve during the pilot. '
       + 'We keep them until the pilot ends, and for no more than 12 months. We will not add you to any mailing list.',
     '',
-    'To ask a question, or to have this report deleted, reply to this email and include the report ID.',
+    'To ask a question, or to have this report deleted, reply to this email or write to hello@microbiologyatlas.com, and include the report ID.',
     '',
     'If you did not share a report on Microbiology Atlas, you can ignore this message. No further emails will follow.',
     '',

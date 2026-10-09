@@ -7,7 +7,8 @@ from pathlib import Path
 
 DIST = Path(__file__).resolve().parent.parent / "dist"
 UPDATED = "8 October 2026"
-INBOX = "microbiology-atlas-team@agentmail.to"
+INBOX = "microbiology-atlas-team@agentmail.to"  # receives shared reports (named in the consent wording)
+CONTACT = "hello@microbiologyatlas.com"       # general contact; forwards to the owner
 
 
 def shell(slug, title, description, body):
@@ -61,7 +62,7 @@ PAGES["about"] = ("About", "Who runs Microbiology Atlas, what it is for, and how
 PAGES["privacy"] = ("Privacy", "What Microbiology Atlas does with the information you enter, including optional report sharing.", f"""
 <p class="eyebrow">PRIVACY</p>
 <h1>Your entries stay in your browser unless you choose to share.</h1>
-<p class="lead">This page explains what happens to information on Microbiology Atlas. It is operated by Forest van Eeden (contact: <a href="mailto:{INBOX}">{INBOX}</a>).</p>
+<p class="lead">This page explains what happens to information on Microbiology Atlas. It is operated by Forest van Eeden (contact: <a href="mailto:{CONTACT}">{CONTACT}</a>).</p>
 
 <h2>The planner and your downloads</h2>
 <p>Everything you type into the item planner, semester budget, checklist and report details is processed by JavaScript in your own browser. It is not sent to us and not stored: reloading the page clears it. Downloads (the item plan, budget CSV, purchasing brief and complete report) are created on your device and are under your control.</p>
@@ -87,7 +88,7 @@ PAGES["privacy"] = ("Privacy", "What Microbiology Atlas does with the informatio
 <p>To prevent duplicate emails and abuse, the server keeps, for up to 30 days, the report ID, delivery status and timestamps for each shared report (never its contents). To limit how many reports one connection can send, it keeps a one-way hash of your IP address for about an hour. If you give an email address, it keeps a one-way hash of that address for about a day, so that no address can be sent more than three confirmations a day. Neither hash can be turned back into the original.</p>
 
 <h2>Your choices</h2>
-<p>To ask us to delete a report you shared, or to ask what we hold, email <a href="mailto:{INBOX}">{INBOX}</a> with the report ID shown on the report. Deleting it from our mailbox may not immediately remove copies in our providers' backups.</p>
+<p>To ask us to delete a report you shared, or to ask what we hold, email <a href="mailto:{CONTACT}">{CONTACT}</a> with the report ID shown on the report. Deleting it from our mailbox may not immediately remove copies in our providers' backups.</p>
 
 <h2>Changes</h2>
 <p>If we change what is shared or who receives it, we will update the wording beside the sharing box and this page before the change takes effect.</p>
@@ -125,7 +126,8 @@ PAGES["disclosures"] = ("Disclosures and method", "How Microbiology Atlas is fun
 PAGES["contact"] = ("Contact", "How to reach the Microbiology Atlas team.", f"""
 <p class="eyebrow">CONTACT</p>
 <h1>Talk to us.</h1>
-<p class="lead">Email <a href="mailto:{INBOX}">{INBOX}</a>. It is read by Forest van Eeden.</p>
+<p class="lead">Email <a href="mailto:{CONTACT}">{CONTACT}</a>. It is read by Forest van Eeden.</p>
+<p>Planning reports that visitors choose to share go to a separate team inbox, {INBOX}. Use the address above for everything else.</p>
 <h2>Especially welcome</h2>
 <ul>
 <li>You plan or approve purchases for a microbiology teaching lab and would try the planner on a real purchase.</li>
