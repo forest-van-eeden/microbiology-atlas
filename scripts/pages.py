@@ -148,8 +148,9 @@ PAGES["guides"] = ("Guides", "Practical purchasing guides for college microbiolo
 <ul class="guide-list">
 <li><a href="/guides/microscope-purchasing"><b>Buying microscopes for a microbiology teaching lab</b></a><span>What students need to see, how many instruments you need, the specification that matters, classroom durability, and a printable worksheet for comparing quotes.</span></li>
 <li><a href="/guides/comparing-quotes"><b>Comparing supplier quotes for a teaching lab</b></a><span>How to compare quotes on total cost, timing and terms instead of pack price, with a printable comparison worksheet.</span></li>
+<li><a href="/guides/equipment-review"><b>Reviewing the equipment you already own</b></a><span>How to check what the lab already has, sort it into usable, repair or retire, catch expired consumables, and find the real shortfall, with a printable inventory worksheet.</span></li>
 </ul>
-<p class="fine">Planned next: reviewing equipment you already own. Suggestions are welcome at the <a href="/contact">contact page</a>.</p>
+<p class="fine">Suggestions for further guides are welcome at the <a href="/contact">contact page</a>.</p>
 """)
 
 PAGES["guides/microscope-purchasing"] = ("Buying microscopes for a microbiology teaching lab", "A worksheet for specifying, counting and comparing compound microscopes for a college microbiology teaching lab.", """
@@ -346,6 +347,83 @@ PAGES["guides/comparing-quotes"] = ("Comparing supplier quotes for a teaching la
 <tr><td>Returns / warranty</td><td></td><td></td><td></td></tr>
 <tr><td>Approved supplier or contract?</td><td></td><td></td><td></td></tr>
 <tr><td>Notes</td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<p class="updated">Last updated 9 October 2026.</p>
+""")
+
+PAGES["guides/equipment-review"] = ("Reviewing the equipment you already own", "How to review existing microbiology teaching-lab equipment and supplies before buying, with a printable inventory worksheet.", """
+<p class="eyebrow">GUIDE · EXISTING EQUIPMENT</p>
+<h1>Reviewing the equipment you already own.</h1>
+<p class="lead">The cheapest purchase is the one you don't need to make. Before ordering for a new term, check what the lab already has, what condition it's in, and what has quietly expired. The result is a count of usable stock you can trust when you plan what to buy.</p>
+<div class="callout"><p>This is a planning aid. Questions of safety, servicing and certification belong to your institution's environmental health and safety (EHS) or biosafety staff, and to the equipment manufacturer. Don't use equipment you suspect is faulty. <a href="/disclosures">How we work</a>.</p></div>
+
+<nav class="toc" aria-label="On this page"><ol>
+<li><a href="#list">Make the list</a></li>
+<li><a href="#condition">Check condition</a></li>
+<li><a href="#sort">Sort into usable, repair, retire</a></li>
+<li><a href="#consumables">Check consumables and dates</a></li>
+<li><a href="#capacity">Compare against what the course needs</a></li>
+<li><a href="#eworksheet">Printable worksheet</a></li>
+</ol></nav>
+
+<h2 id="list">1. Make the list</h2>
+<p>Walk the lab, prep room and storage with the worksheet below. For each item, note where it is, how many there are, the make and model, and roughly when it was bought. Include equipment that is rarely used: it is often the thing nobody remembers until a lab needs it.</p>
+<p>If your department already keeps an asset register, start from that and check it against what is actually on the shelves.</p>
+
+<h2 id="condition">2. Check condition</h2>
+<p>A quick look catches most problems. These are common checks for teaching-lab equipment; follow the manufacturer's instructions and your institution's procedures for anything more.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Equipment</th><th scope="col">What to look for</th></tr></thead>
+<tbody>
+<tr><td>Microscopes</td><td>Clean optics without haze or residue; smooth focus that holds position; working light; stage controls that move freely; all objectives present. The <a href="/guides/microscope-purchasing">microscope guide</a> lists the specification a teaching microscope needs.</td></tr>
+<tr><td>Incubators</td><td>Holds the set temperature: check against a separate thermometer over a day. Door seals intact.</td></tr>
+<tr><td>Autoclaves</td><td>Service and inspection records up to date, and the cycle verification your institution requires. Ask EHS what applies; autoclaves are pressure vessels.</td></tr>
+<tr><td>Biological safety cabinets</td><td>Date of last certification, and whether it is still current under your institution's schedule. Don't rely on a cabinet whose certification has lapsed.</td></tr>
+<tr><td>Pipettes</td><td>Date of last calibration or check; no leaks or damaged tip cones.</td></tr>
+<tr><td>Balances</td><td>Calibration date; level; reads correctly with a check weight.</td></tr>
+<tr><td>Water baths, hot plates, heat blocks</td><td>Reach and hold temperature; cords and plugs undamaged.</td></tr>
+<tr><td>Centrifuges</td><td>Lid lock works; rotor and buckets undamaged; service date.</td></tr>
+<tr><td>Glassware</td><td>No chips, cracks or star fractures, especially on items that will be autoclaved or heated.</td></tr>
+</tbody></table></div>
+
+<h2 id="sort">3. Sort everything into usable, repair or retire</h2>
+<ul>
+<li><b>Usable:</b> works, meets the course's needs, and is within any required service or certification date. Only these count as usable stock in the <a href="/#buy-plan">item planner</a>.</li>
+<li><b>Repair:</b> worth fixing. Get a repair quote and compare it with the cost of replacing, using the <a href="/guides/comparing-quotes">quote comparison guide</a>. Note how long the repair will take.</li>
+<li><b>Retire:</b> unsafe, beyond economic repair, or no longer suitable. Follow your institution's disposal or surplus process, which may require decontamination first.</li>
+</ul>
+
+<h2 id="consumables">4. Check consumables and dates</h2>
+<ul>
+<li><b>Expiry dates</b> on media, stains, reagents, antibiotic discs and test kits. Note anything expiring before or during the term.</li>
+<li><b>Storage conditions:</b> items that should be refrigerated or kept dark, and whether they have been.</li>
+<li><b>Opened containers</b> that may have a shorter life once opened.</li>
+<li><b>Stock rotation:</b> put newer stock behind older stock so the older is used first.</li>
+<li><b>Expired chemicals and reagents</b> go through your institution's chemical disposal process, not the bin or the drain.</li>
+</ul>
+
+<h2 id="capacity">5. Compare against what the course needs</h2>
+<p>For each item, compare the usable count with how many the course needs at the same time (for equipment) or in total across the term (for consumables). The difference is your shortfall. Enter it in the <a href="/#buy-plan">item planner</a> to see how many packs to order, and put the cost in the <a href="/#tool">semester budget</a>.</p>
+
+<h2 id="eworksheet">6. Printable worksheet</h2>
+<p>Print this page (Ctrl+P or ⌘P) and take it round the lab. Choose "Save as PDF" in the print dialog to keep a digital copy.</p>
+<div class="table-wrap"><table class="worksheet">
+<thead><tr><th scope="col">Item and model</th><th scope="col">Location</th><th scope="col">Qty</th><th scope="col">Usable / repair / retire</th><th scope="col">Last service, calibration or expiry</th><th scope="col">Action</th></tr></thead>
+<tbody>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 </tbody></table></div>
 <p class="updated">Last updated 9 October 2026.</p>
 """)

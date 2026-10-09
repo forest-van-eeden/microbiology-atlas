@@ -17,6 +17,7 @@ Search sitemap: `/sitemap.xml` (public pages only); `robots.txt` excludes `/api/
 - `/guides` — purchasing guides index
   - `/guides/microscope-purchasing` — microscope purchasing worksheet (printable)
   - `/guides/comparing-quotes` — comparing supplier quotes (printable)
+  - `/guides/equipment-review` — reviewing equipment you already own (printable inventory worksheet)
 - `/about` — owner (Forest van Eeden), purpose, pilot status, editorial approach
 - `/privacy` — local processing, optional sharing, providers, retention (until pilot ends, max 12 months)
 - `/disclosures` — compensation (none), future affiliate labelling, calculation method

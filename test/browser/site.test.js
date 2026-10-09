@@ -410,7 +410,7 @@ test('Q12 provider error after accepting: status reconciled, no resend', async (
 
 // ---------- site pages ----------
 
-for (const slug of ['about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing', 'guides/comparing-quotes']) {
+for (const slug of ['about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing', 'guides/comparing-quotes', 'guides/equipment-review']) {
   test('/' + slug + ' renders under the CSP, is reachable from the footer and fits a phone', async () => {
     const { page, context, problems } = await open({ width: 320, height: 700 }, base + slug);
     assert.equal(await page.locator('h1').count(), 1);
@@ -437,7 +437,7 @@ test('security headers present on pages', async () => {
 });
 
 test('every page passes the contrast scan', async () => {
-  for (const slug of ['', 'about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing', 'guides/comparing-quotes']) {
+  for (const slug of ['', 'about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing', 'guides/comparing-quotes', 'guides/equipment-review']) {
     const { page, context } = await open(undefined, base + slug);
     assert.deepEqual(await page.evaluate(CONTRAST), [], '/' + slug);
     await context.close();

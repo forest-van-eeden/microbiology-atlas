@@ -1,6 +1,6 @@
 # Microbiology Atlas — implementation status
 
-Updated 8 October 2026: increment 2 live (public site + report sharing, verified end to end).
+Updated 9 October 2026: increment 2 live (public site + report sharing, verified end to end); three guides live.
 
 Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site; owner named as **Forest van Eeden**; shared reports kept **until the pilot ends, no longer than 12 months**.
 
@@ -11,7 +11,7 @@ Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site
 | Item planner, semester budget, checklist, exports | Built; integer-cent formulas (formula v2); regression-tested |
 | Combined HTML report | Built; versioned envelope, dated/ID filename, CSP-locked, offline + print tested |
 | Validation and accessibility basics | Built; field errors, focus management, skip link, contrast scan on every page |
-| Guides | `/guides` index and `/guides/microscope-purchasing` (9 Oct 2026): what students need to see, counting, specification table, durability, service and running costs, printable quote-comparison worksheet; and `/guides/comparing-quotes` (same request, per-usable-unit cost, total landed cost, timing, terms, institutional route, printable worksheet). No product recommendations or paid links. Planned: existing-equipment review |
+| Guides | `/guides` index and `/guides/microscope-purchasing` (9 Oct 2026): what students need to see, counting, specification table, durability, service and running costs, printable quote-comparison worksheet; and `/guides/comparing-quotes` (same request, per-usable-unit cost, total landed cost, timing, terms, institutional route, printable worksheet); and `/guides/equipment-review` (inventory, condition checks, usable/repair/retire, consumable expiry, shortfall, printable inventory worksheet). No product recommendations or paid links |
 | About, Privacy, Disclosures, Contact, 404 pages | Built; content drafted from owner decisions; **owner should review** |
 | Security headers | Built (`dist/_headers`): CSP, no framing, nosniff |
 | Consent checkbox (unticked, exact spec wording, versioned) | Built; only shown when server reports sharing configured |
@@ -19,7 +19,7 @@ Owner decisions on 8 October 2026: host on **Cloudflare Pages**; **public** site
 | Uncertain-outcome handling | Built: status endpoint reconciles with AgentMail by message label; no automatic resend |
 | Independent download/email status, retry | Built; retry reuses the same report |
 | Optional confirmation email | Built: optional address (enabled only when sharing is ticked) → one fixed-text receipt with the report ID; team copy gets Reply-To; ≤3 receipts per address per day (hashed); never resent on duplicates; failure doesn't affect the report. Consent version `2026-10-08.2`; privacy page updated. **Live test 8 Oct 2026 13:36 EDT**: report MA-N5GZZT23-M3TTNE06 with confirmation → team copy and receipt both received. Delivery to outside providers (e.g. Gmail), and the Reply-To header itself, not yet verified |
-| Tests | 76 unit + 32 browser, all passing locally (fake AgentMail) |
+| Tests | 76 unit + 33 browser, all passing locally (fake AgentMail) |
 | Custom domain | microbiologyatlas.com (registered at Namecheap 9 Oct 2026; nameservers → Cloudflare: davina/dom.ns.cloudflare.com). Apex and www attached to Pages; `functions/_middleware.js` 301-redirects www and microbiology-atlas.pages.dev to https://microbiologyatlas.com (API and previews exempt). Email: Cloudflare Email Routing; hello@microbiologyatlas.com forwards to the owner's Gmail (old Namecheap forwarding records removed). Site contact address is hello@; shared reports still go to the AgentMail team inbox |
 | Deployment to Cloudflare | **Live** at https://microbiology-atlas.pages.dev (8 Oct 2026); auto-deploys from `main` of github.com/forest-van-eeden/microbiology-atlas; KV `SHARE_LOG` bound; `AGENTMAIL_API_KEY` secret (inbox-scoped key); `SHARING_ENABLED=true` |
 | Live end-to-end email to team inbox | **Verified 8 Oct 2026 13:27 EDT**: test report MA-QDJ529B4-E3DKZDZ2 sent from the live site; received in microbiology-atlas-team@agentmail.to with both labels and the 7.7 KB attachment (filename and size match the download); `/api/reports/status` returns `accepted`. Team inbox sends to itself successfully. |
