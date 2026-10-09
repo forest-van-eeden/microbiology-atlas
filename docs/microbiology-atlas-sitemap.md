@@ -1,6 +1,8 @@
 # Microbiology Atlas sitemap
 
+Canonical address: https://microbiologyatlas.com (www. and microbiology-atlas.pages.dev redirect here).
 Hosting: Cloudflare Pages (static `dist/` + Functions in `functions/`). Audience: public (owner decision, 8 October 2026).
+Search sitemap: `/sitemap.xml` (public pages only); `robots.txt` excludes `/api/`.
 
 ## Pages
 - `/` — planner (one page with section anchors)

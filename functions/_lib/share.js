@@ -151,7 +151,7 @@ export function confirmationText(reportId) {
     '',
     'If you did not share a report on Microbiology Atlas, you can ignore this message. No further emails will follow.',
     '',
-    'Microbiology Atlas · https://microbiology-atlas.pages.dev/privacy',
+    'Microbiology Atlas · https://microbiologyatlas.com/privacy',
   ].join('\n');
 }
 
