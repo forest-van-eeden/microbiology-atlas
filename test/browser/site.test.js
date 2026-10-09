@@ -410,11 +410,11 @@ test('Q12 provider error after accepting: status reconciled, no resend', async (
 
 // ---------- site pages ----------
 
-for (const slug of ['about', 'privacy', 'disclosures', 'contact']) {
+for (const slug of ['about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing']) {
   test('/' + slug + ' renders under the CSP, is reachable from the footer and fits a phone', async () => {
     const { page, context, problems } = await open({ width: 320, height: 700 }, base + slug);
     assert.equal(await page.locator('h1').count(), 1);
-    assert.equal(await page.locator('header nav a[aria-current=page]').getAttribute('href'), '/' + slug);
+    assert.equal(await page.locator('header nav a[aria-current=page]').getAttribute('href'), '/' + slug.split('/')[0]);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth));
     assert.deepEqual(problems, []);
     await context.close();
@@ -437,7 +437,7 @@ test('security headers present on pages', async () => {
 });
 
 test('every page passes the contrast scan', async () => {
-  for (const slug of ['', 'about', 'privacy', 'disclosures', 'contact']) {
+  for (const slug of ['', 'about', 'privacy', 'disclosures', 'contact', 'guides', 'guides/microscope-purchasing']) {
     const { page, context } = await open(undefined, base + slug);
     assert.deepEqual(await page.evaluate(CONTRAST), [], '/' + slug);
     await context.close();
@@ -496,5 +496,16 @@ test('valid confirmation email: team copy with Reply-To, plus one receipt; statu
   assert.deepEqual(mail.sent[1].to, ['Coordinator@example.edu']);
   assert.ok(!mail.sent[1].text.includes('Example College'));
   assert.deepEqual(problems, []);
+  await context.close();
+});
+
+test('microscope guide prints cleanly: navigation hidden, worksheet table intact', async () => {
+  const { page, context } = await open(undefined, base + 'guides/microscope-purchasing');
+  await page.emulateMedia({ media: 'print' });
+  assert.equal(await page.isVisible('header'), false);
+  assert.equal(await page.isVisible('footer'), false);
+  assert.equal(await page.locator('.worksheet tbody tr').count(), 18);
+  const pdf = await page.pdf({ format: 'Letter' });
+  assert.ok(pdf.length > 20000);
   await context.close();
 });

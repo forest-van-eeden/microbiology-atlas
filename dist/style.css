@@ -41,3 +41,25 @@ footer{align-items:center;flex-wrap:wrap}footer nav{display:flex;gap:18px;flex-w
 .share-contact{margin:16px 0 0 34px;display:grid;gap:6px;max-width:460px}.share-contact label{font-size:12px}
 #share-email{margin-top:0}#share-email:disabled{opacity:.55;cursor:not-allowed}.share-help{font-size:12px;color:#3f544c}
 @media(max-width:400px){.share-contact{margin-left:0}}
+
+/* Guides */
+.guide-list{list-style:none;padding:0;margin:28px 0;display:grid;gap:14px}
+.guide-list li{border:1px solid #ccd2c5;background:#fffefa;padding:18px 20px;display:grid;gap:6px}
+.guide-list a{font-size:18px}.guide-list span{font-size:14px;color:#3f544c}
+.page nav.toc{border-top:1px solid #ccd2c5;border-bottom:1px solid #ccd2c5;margin:26px 0;padding:10px 0}
+.page nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:32px}.page nav.toc li{font-size:14px;margin:4px 0;break-inside:avoid}
+.page thead th{width:auto;background:#e7ebdc;font-size:13px}
+.page td{font-size:14px}
+.table-wrap{overflow-x:auto;max-width:100%}
+.worksheet{min-width:620px}.worksheet td{height:34px}.worksheet td:first-child{font-weight:bold;width:30%}
+.page h2[id]{scroll-margin-top:90px}
+@media(max-width:600px){.page nav.toc ol{columns:1}}
+@media print{
+  header,footer,.skip,nav.toc,.callout a{display:none!important}
+  body{background:#fff;color:#000;font-size:11pt}.page{padding:0;max-width:none}
+  .page h1{font-size:24pt}.page h2{font-size:15pt;break-after:avoid}
+  table,tr{break-inside:avoid}.worksheet{min-width:0}.worksheet td{height:28px;border:1px solid #888}
+  a{color:#000;text-decoration:none}
+}
+
+.page th,.page td{overflow-wrap:break-word}.page tbody td:first-child{min-width:7.5em}

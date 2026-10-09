@@ -14,6 +14,8 @@ Search sitemap: `/sitemap.xml` (public pages only); `robots.txt` excludes `/api/
   - `/#suppliers` — supplier starting points (ordinary unpaid links)
   - `/#pilot` — pilot purpose and validation plan
   - `/#research` — transparency
+- `/guides` — purchasing guides index
+  - `/guides/microscope-purchasing` — microscope purchasing worksheet (printable)
 - `/about` — owner (Forest van Eeden), purpose, pilot status, editorial approach
 - `/privacy` — local processing, optional sharing, providers, retention (until pilot ends, max 12 months)
 - `/disclosures` — compensation (none), future affiliate labelling, calculation method

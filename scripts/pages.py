@@ -12,9 +12,11 @@ CONTACT = "hello@microbiologyatlas.com"       # general contact; forwards to the
 
 
 def shell(slug, title, description, body):
+    def current(s):
+        return s == slug or (s == "guides" and slug.startswith("guides/"))
     nav = "".join(
-        f'<a href="/{s}"{" aria-current=\"page\"" if s == slug else ""}>{label}</a>'
-        for s, label in [("", "Planner"), ("about", "About"), ("privacy", "Privacy"), ("disclosures", "Disclosures"), ("contact", "Contact")]
+        f'<a href="/{s}"{" aria-current=\"page\"" if current(s) else ""}>{label}</a>'
+        for s, label in [("", "Planner"), ("guides", "Guides"), ("about", "About"), ("privacy", "Privacy"), ("disclosures", "Disclosures"), ("contact", "Contact")]
     )
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="{description}"><title>{title} — Microbiology Atlas</title>
@@ -24,7 +26,7 @@ def shell(slug, title, description, body):
 <main id="main" tabindex="-1"><article class="page">
 {body}
 </article></main>
-<footer><a class="brand" href="/">◉ MICROBIOLOGY <b>ATLAS</b></a><nav aria-label="Site information"><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/disclosures">Disclosures</a><a href="/contact">Contact</a></nav><span>© 2026 Forest van Eeden · Independent; not affiliated with ASM or any supplier.</span></footer>
+<footer><a class="brand" href="/">◉ MICROBIOLOGY <b>ATLAS</b></a><nav aria-label="Site information"><a href="/guides">Guides</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/disclosures">Disclosures</a><a href="/contact">Contact</a></nav><span>© 2026 Forest van Eeden · Independent; not affiliated with ASM or any supplier.</span></footer>
 </body></html>
 """
 
@@ -139,6 +141,126 @@ PAGES["contact"] = ("Contact", "How to reach the Microbiology Atlas team.", f"""
 <p class="updated">Last updated {UPDATED}.</p>
 """)
 
+PAGES["guides"] = ("Guides", "Practical purchasing guides for college microbiology teaching labs.", """
+<p class="eyebrow">GUIDES</p>
+<h1>Purchasing guides for teaching labs.</h1>
+<p class="lead">Short, practical worksheets for the decisions that come up when equipping a microbiology teaching lab. Each one tells you what to settle before you ask for a quote, and what to compare when quotes arrive.</p>
+<ul class="guide-list">
+<li><a href="/guides/microscope-purchasing"><b>Buying microscopes for a microbiology teaching lab</b></a><span>What students need to see, how many instruments you need, the specification that matters, classroom durability, and a printable worksheet for comparing quotes.</span></li>
+</ul>
+<p class="fine">More guides are planned: comparing supplier quotes, and reviewing equipment you already own. Suggestions are welcome at the <a href="/contact">contact page</a>.</p>
+""")
+
+PAGES["guides/microscope-purchasing"] = ("Buying microscopes for a microbiology teaching lab", "A worksheet for specifying, counting and comparing compound microscopes for a college microbiology teaching lab.", """
+<p class="eyebrow">GUIDE · MICROSCOPES</p>
+<h1>Buying microscopes for a microbiology teaching lab.</h1>
+<p class="lead">Microscopes are usually the largest single purchase in a teaching lab, and they last for years. This guide helps you settle what you need before you request quotes, so you can compare offers on the things that matter.</p>
+<div class="callout"><p>This is a planning aid, not a product recommendation. It does not rank brands or models, and nobody pays us for anything on this page. Confirm specifications with your faculty and your institution's procurement and safety staff. <a href="/disclosures">How we work</a>.</p></div>
+
+<nav class="toc" aria-label="On this page"><ol>
+<li><a href="#see">What students need to see</a></li>
+<li><a href="#count">How many you need</a></li>
+<li><a href="#spec">The specification that matters</a></li>
+<li><a href="#durable">Classroom durability</a></li>
+<li><a href="#support">Service, parts and running costs</a></li>
+<li><a href="#extras">Optional extras</a></li>
+<li><a href="#worksheet">Printable worksheet</a></li>
+</ol></nav>
+
+<h2 id="see">1. Start with what students need to see</h2>
+<p>The course decides the optics. Stained bacteria are the deciding case in most microbiology courses: resolving them needs a 100× oil-immersion objective. If any lab exercise involves Gram stains or other stained bacterial smears, every student microscope (or every one used for those exercises) needs one.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">If students will…</th><th scope="col">They need</th></tr></thead>
+<tbody>
+<tr><td>Examine stained bacteria (Gram stain, endospore, acid-fast)</td><td>100× oil-immersion objective, about 1,000× total magnification, plus a condenser able to match it (see below)</td></tr>
+<tr><td>Look at fungi, protozoa or algae in wet mounts</td><td>40× objective is usually enough; unstained specimens may need phase contrast or careful use of the condenser diaphragm</td></tr>
+<tr><td>Observe live, unstained bacteria or motility</td><td>Phase contrast or darkfield, which are add-ons with their own cost</td></tr>
+<tr><td>Study colonies, plates or larger specimens</td><td>A stereo (dissecting) microscope, which is a different instrument</td></tr>
+</tbody></table></div>
+<p>Check your lab manual and syllabus against this table before deciding anything else. <a href="https://asm.org/guideline/asm-curriculum-guidelines-for-undergraduate-microb">ASM's curriculum guidelines</a> include microscopy among the laboratory skills students should develop.</p>
+
+<h2 id="count">2. Work out how many you need</h2>
+<p>For microscopes, the count is about how many students are at the bench at the same time, not total enrollment.</p>
+<ul>
+<li><b>Seats per section:</b> one microscope per student, or one per pair? Pairs halve the cost but halve each student's time at the eyepieces.</li>
+<li><b>Overlapping sections:</b> if two sections ever run at once, you need enough for both.</li>
+<li><b>Spares:</b> plan for one or two instruments out for repair at any time, so a broken one doesn't leave a student without a microscope.</li>
+<li><b>What you already own:</b> count only instruments that meet the specification below and work reliably.</li>
+</ul>
+<p>The <a href="/#buy-plan">item planner</a> does this arithmetic for you: enter the microscopes you need as "units required", the working ones you own as "usable stock", and a pack size of 1.</p>
+
+<h2 id="spec">3. The specification that matters</h2>
+<p>Most of what separates a frustrating teaching microscope from a good one comes down to a few lines on the quote. Ask every supplier to state each of these.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Feature</th><th scope="col">What to ask for</th><th scope="col">Why it matters</th></tr></thead>
+<tbody>
+<tr><td>Objectives</td><td>4×, 10×, 40× and 100× oil immersion. Ask for the numerical aperture (NA) of each, for example 0.65 for the 40× and about 1.25 for the 100× oil.</td><td>Resolution depends on NA, not on magnification. A high magnification with a low NA just enlarges blur.</td></tr>
+<tr><td>Objective grade</td><td>"Achromat" is the usual teaching grade. "Plan achromat" gives a field that is sharp to the edges, at higher cost.</td><td>Plan objectives make it easier for students to see the whole field in focus. Decide whether that is worth the difference.</td></tr>
+<tr><td>Condenser</td><td>An Abbe condenser with NA 1.25, an iris (aperture) diaphragm and adjustable height.</td><td>The condenser has to match the 100× objective's NA. A lower-NA condenser limits what that objective can resolve.</td></tr>
+<tr><td>Parfocal and parcentered objectives</td><td>Confirm both.</td><td>Students stay in focus and on target when switching objectives, which saves time and slides.</td></tr>
+<tr><td>Objective thread standard</td><td>Ask which standard the objectives use and whether replacements are sold separately.</td><td>A standard thread means a damaged objective can be replaced on its own instead of the whole microscope.</td></tr>
+<tr><td>Eyepieces and head</td><td>10× wide-field eyepieces; binocular head with interpupillary and diopter adjustment.</td><td>Binocular heads with adjustment are easier on students who spend a whole lab period at the eyepieces, including those who wear glasses.</td></tr>
+<tr><td>Illumination</td><td>LED with adjustable intensity.</td><td>Runs cool and long-lived. Ask about the expected bulb or LED life and replacement cost.</td></tr>
+<tr><td>Stage</td><td>Mechanical stage with slide holder and coaxial X–Y controls.</td><td>Lets students scan a smear systematically instead of pushing slides by hand.</td></tr>
+</tbody></table></div>
+<p class="fine">Background on numerical aperture and condensers: <a href="https://evidentscientific.com/en/microscope-resource/knowledge-hub/anatomy/numaperture">Evident Scientific, "Numerical Aperture"</a>. Oil immersion is needed because air limits a dry objective to an NA below 1.0.</p>
+
+<h2 id="durable">4. Classroom durability</h2>
+<p>Teaching microscopes are handled by many inexperienced users. These features reduce damage and loss.</p>
+<ul>
+<li><b>Spring-loaded (retractable) 40× and 100× objectives,</b> so a lens driven into a slide retracts instead of cracking the slide or the lens.</li>
+<li><b>A focus stop or tension control,</b> so the stage can't be raised into the objective or drift down during use.</li>
+<li><b>Locking eyepieces and objectives,</b> if equipment goes missing in your setting.</li>
+<li><b>A carrying handle, cord storage and dust covers,</b> because microscopes move between storage and benches every session.</li>
+<li><b>Focus mechanism construction:</b> ask what the gears are made of and what the warranty says about them, since focus mechanisms take the most wear.</li>
+</ul>
+
+<h2 id="support">5. Service, parts and running costs</h2>
+<ul>
+<li>Warranty length, and what it excludes (optics, electronics, damage from use).</li>
+<li>Whether repairs are done locally or the instrument must be shipped away, and for how long.</li>
+<li>Availability and price of replacement objectives, eyepieces, LEDs and stage parts.</li>
+<li>Whether the supplier offers cleaning or servicing visits, and their cost.</li>
+<li>Running costs to include in your <a href="/#tool">semester budget</a>: immersion oil, lens paper and cleaning solution, slides and coverslips, and staff time for cleaning and maintenance.</li>
+</ul>
+
+<h2 id="extras">6. Optional extras</h2>
+<ul>
+<li><b>A camera or trinocular head</b> on the instructor's microscope, so a specimen can be shown to the whole class.</li>
+<li><b>Phase contrast or darkfield,</b> if live, unstained organisms are part of the course.</li>
+<li><b>Storage cabinets</b> that keep instruments covered and secured between sessions.</li>
+</ul>
+
+<h2 id="worksheet">7. Printable worksheet</h2>
+<p>Print this page (Ctrl+P or ⌘P) and fill in the table below for each quote you receive. Choose "Save as PDF" in the print dialog to keep a digital copy.</p>
+<div class="table-wrap"><table class="worksheet">
+<thead><tr><th scope="col">Requirement</th><th scope="col">Our need</th><th scope="col">Quote A</th><th scope="col">Quote B</th><th scope="col">Quote C</th></tr></thead>
+<tbody>
+<tr><td>Supplier and model</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Quantity (including spares)</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>100× oil objective NA</td><td>≥ 1.25</td><td></td><td></td><td></td></tr>
+<tr><td>Condenser NA, iris diaphragm</td><td>1.25, yes</td><td></td><td></td><td></td></tr>
+<tr><td>Objective grade (achromat / plan)</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Parfocal and parcentered</td><td>Yes</td><td></td><td></td><td></td></tr>
+<tr><td>Binocular, interpupillary and diopter adjustment</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Illumination type and life</td><td>LED</td><td></td><td></td><td></td></tr>
+<tr><td>Spring-loaded 40× and 100×</td><td>Yes</td><td></td><td></td><td></td></tr>
+<tr><td>Mechanical stage, coaxial controls</td><td>Yes</td><td></td><td></td><td></td></tr>
+<tr><td>Warranty (years, exclusions)</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Repair arrangements</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Replacement objective price</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Unit price</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Freight, tax, other charges</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Total quoted cost</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Delivery date</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Quote valid until</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+
+<h2>Where to request quotes</h2>
+<p>Your institution may already have approved suppliers or contract pricing, so check with your purchasing office first. The <a href="/#suppliers">supplier research section</a> on the planner lists educational suppliers to start with. Those are ordinary, unpaid links.</p>
+<p class="updated">Last updated 9 October 2026.</p>
+""")
+
 PAGES["404"] = ("Page not found", "Page not found.", """
 <p class="eyebrow">404</p>
 <h1>That page isn't here.</h1>
@@ -147,5 +269,6 @@ PAGES["404"] = ("Page not found", "Page not found.", """
 
 if __name__ == "__main__":
     for slug, (title, desc, body) in PAGES.items():
+        (DIST / f"{slug}.html").parent.mkdir(parents=True, exist_ok=True)
         (DIST / f"{slug}.html").write_text(shell(slug, title, desc, body.strip()), encoding="utf-8")
         print("wrote", slug + ".html")
