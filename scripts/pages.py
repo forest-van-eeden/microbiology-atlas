@@ -147,8 +147,9 @@ PAGES["guides"] = ("Guides", "Practical purchasing guides for college microbiolo
 <p class="lead">Short, practical worksheets for the decisions that come up when equipping a microbiology teaching lab. Each one tells you what to settle before you ask for a quote, and what to compare when quotes arrive.</p>
 <ul class="guide-list">
 <li><a href="/guides/microscope-purchasing"><b>Buying microscopes for a microbiology teaching lab</b></a><span>What students need to see, how many instruments you need, the specification that matters, classroom durability, and a printable worksheet for comparing quotes.</span></li>
+<li><a href="/guides/comparing-quotes"><b>Comparing supplier quotes for a teaching lab</b></a><span>How to compare quotes on total cost, timing and terms instead of pack price, with a printable comparison worksheet.</span></li>
 </ul>
-<p class="fine">More guides are planned: comparing supplier quotes, and reviewing equipment you already own. Suggestions are welcome at the <a href="/contact">contact page</a>.</p>
+<p class="fine">Planned next: reviewing equipment you already own. Suggestions are welcome at the <a href="/contact">contact page</a>.</p>
 """)
 
 PAGES["guides/microscope-purchasing"] = ("Buying microscopes for a microbiology teaching lab", "A worksheet for specifying, counting and comparing compound microscopes for a college microbiology teaching lab.", """
@@ -232,7 +233,7 @@ PAGES["guides/microscope-purchasing"] = ("Buying microscopes for a microbiology 
 </ul>
 
 <h2 id="worksheet">7. Printable worksheet</h2>
-<p>Print this page (Ctrl+P or ⌘P) and fill in the table below for each quote you receive. Choose "Save as PDF" in the print dialog to keep a digital copy.</p>
+<p>Print this page (Ctrl+P or ⌘P) and fill in the table below for each quote you receive. For comparing costs, delivery and terms in more detail, see <a href="/guides/comparing-quotes">comparing supplier quotes</a>. Choose "Save as PDF" in the print dialog to keep a digital copy.</p>
 <div class="table-wrap"><table class="worksheet">
 <thead><tr><th scope="col">Requirement</th><th scope="col">Our need</th><th scope="col">Quote A</th><th scope="col">Quote B</th><th scope="col">Quote C</th></tr></thead>
 <tbody>
@@ -258,6 +259,94 @@ PAGES["guides/microscope-purchasing"] = ("Buying microscopes for a microbiology 
 
 <h2>Where to request quotes</h2>
 <p>Your institution may already have approved suppliers or contract pricing, so check with your purchasing office first. The <a href="/#suppliers">supplier research section</a> on the planner lists educational suppliers to start with. Those are ordinary, unpaid links.</p>
+<p class="updated">Last updated 9 October 2026.</p>
+""")
+
+PAGES["guides/comparing-quotes"] = ("Comparing supplier quotes for a teaching lab", "How to compare supplier quotes for a college microbiology teaching lab on total cost, timing and terms, with a printable worksheet.", """
+<p class="eyebrow">GUIDE · QUOTES</p>
+<h1>Comparing supplier quotes for a teaching lab.</h1>
+<p class="lead">Two quotes for the same order rarely line up. One has a lower unit price but larger packs, another adds freight or cold-shipping charges, a third arrives after the lab starts. This guide helps you compare them on what you will actually pay and when you will actually have the items.</p>
+<div class="callout"><p>This is a planning aid, not a recommendation of any supplier. Your institution's purchasing rules come first. <a href="/disclosures">How we work</a>.</p></div>
+
+<nav class="toc" aria-label="On this page"><ol>
+<li><a href="#same">Ask for the same thing</a></li>
+<li><a href="#units">Compare per usable unit</a></li>
+<li><a href="#total">Add up the total cost</a></li>
+<li><a href="#timing">Check timing</a></li>
+<li><a href="#terms">Read the terms</a></li>
+<li><a href="#route">Follow your institution's route</a></li>
+<li><a href="#qworksheet">Printable worksheet</a></li>
+</ol></nav>
+
+<h2 id="same">1. Ask every supplier for the same thing</h2>
+<p>Quotes can only be compared if they answer the same request. Send each supplier the same written list: item descriptions, the specification that matters (for microscopes, see the <a href="/guides/microscope-purchasing">microscope guide</a>), quantities, your delivery address and the date you need everything by.</p>
+<ul>
+<li>Ask suppliers to say clearly if they are offering a substitute, and what is different about it.</li>
+<li>Ask for prices to be broken down by line, not as a single bundle price.</li>
+<li>Ask for freight, handling and any special shipping charges to be shown separately.</li>
+</ul>
+
+<h2 id="units">2. Compare per usable unit, not per pack</h2>
+<p>Suppliers sell the same item in different pack sizes, so pack prices are not comparable. Convert each quote to what you will actually buy:</p>
+<ul>
+<li><b>Whole packs needed:</b> your shortfall divided by the pack size, rounded up. The <a href="/#buy-plan">item planner</a> does this for you and shows what will be left over.</li>
+<li><b>Cost for the packs you need:</b> packs × pack price. A cheaper pack price can still cost more overall if the pack size forces you to buy more than you need.</li>
+<li><b>Cost per unit you will use:</b> the total divided by the units you actually need, not the units you receive.</li>
+</ul>
+
+<h2 id="total">3. Add up the total cost</h2>
+<p>The figure to compare is what lands on your budget, not the line prices. Check each quote for:</p>
+<ul>
+<li><b>Freight and handling,</b> including minimum-order or small-order fees.</li>
+<li><b>Special shipping</b> for live cultures, perishable media or regulated chemicals. Ask whether cold packs, expedited shipping or hazardous-materials fees apply.</li>
+<li><b>Tax.</b> Many institutions have tax exemptions. Ask your purchasing office whether the supplier needs an exemption certificate on file.</li>
+<li><b>Discounts:</b> educational, volume or contract pricing, and whether they depend on ordering by a certain date.</li>
+<li><b>Ongoing costs</b> that come with the purchase, such as consumables, service or replacement parts.</li>
+</ul>
+<p>Enter the chosen supplier's total once, in the right category of your <a href="/#tool">semester budget</a>.</p>
+
+<h2 id="timing">4. Check timing against your lab schedule</h2>
+<ul>
+<li><b>Delivery date versus first use:</b> leave time to receive, check and set up items before the lab that needs them.</li>
+<li><b>Perishables:</b> for cultures, media and reagents, ask about shelf life and whether delivery can be scheduled close to the date of use.</li>
+<li><b>Backorders:</b> ask whether every line is in stock, and what happens if one is not.</li>
+<li><b>Quote validity:</b> note the expiry date, especially if your approval process takes weeks.</li>
+</ul>
+
+<h2 id="terms">5. Read the terms</h2>
+<ul>
+<li>Returns and damaged-shipment policy, particularly for live or perishable items.</li>
+<li>Warranty and repair arrangements for equipment.</li>
+<li>Whether the supplier may substitute an "equivalent" item without asking you.</li>
+<li>Payment terms your institution can accept, such as purchase orders or invoicing.</li>
+</ul>
+
+<h2 id="route">6. Follow your institution's purchasing route</h2>
+<p>Before choosing, check with your purchasing office. Many institutions have approved suppliers, negotiated contract prices or cooperative purchasing agreements that can change which quote is best, and some require more than one quote above a spending threshold. Keep the quotes and your comparison with your purchase request, so approvers can see why you chose the supplier you did.</p>
+
+<h2 id="qworksheet">7. Printable worksheet</h2>
+<p>Print this page (Ctrl+P or ⌘P) and fill in one column per quote. Choose "Save as PDF" in the print dialog to keep a digital copy.</p>
+<div class="table-wrap"><table class="worksheet">
+<thead><tr><th scope="col">Line</th><th scope="col">Quote A</th><th scope="col">Quote B</th><th scope="col">Quote C</th></tr></thead>
+<tbody>
+<tr><td>Supplier and quote number</td><td></td><td></td><td></td></tr>
+<tr><td>Item offered (substitute?)</td><td></td><td></td><td></td></tr>
+<tr><td>Units per pack</td><td></td><td></td><td></td></tr>
+<tr><td>Packs needed</td><td></td><td></td><td></td></tr>
+<tr><td>Price per pack</td><td></td><td></td><td></td></tr>
+<tr><td>Subtotal (packs × price)</td><td></td><td></td><td></td></tr>
+<tr><td>Discounts</td><td></td><td></td><td></td></tr>
+<tr><td>Freight and handling</td><td></td><td></td><td></td></tr>
+<tr><td>Special shipping (cold, hazardous)</td><td></td><td></td><td></td></tr>
+<tr><td>Tax</td><td></td><td></td><td></td></tr>
+<tr><td>Total cost</td><td></td><td></td><td></td></tr>
+<tr><td>Cost per unit you need</td><td></td><td></td><td></td></tr>
+<tr><td>Delivery date</td><td></td><td></td><td></td></tr>
+<tr><td>Quote valid until</td><td></td><td></td><td></td></tr>
+<tr><td>Returns / warranty</td><td></td><td></td><td></td></tr>
+<tr><td>Approved supplier or contract?</td><td></td><td></td><td></td></tr>
+<tr><td>Notes</td><td></td><td></td><td></td></tr>
+</tbody></table></div>
 <p class="updated">Last updated 9 October 2026.</p>
 """)
 
